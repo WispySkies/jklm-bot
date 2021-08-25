@@ -1,20 +1,28 @@
 var array = [];
 var usedWords = [];
-var usedLetters = [];
+var hasLoadedDict = false;
+var language = "";
 // ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
-// init function
-function populateDict() {
-  const url = chrome.runtime.getURL("dictionary.txt");
-  fetch(url).then((response) => {
-    response.text().then(function(text) {
-      array = text.split(/\r?\n/);
-      // console.log("loaded dictionary: " + array[Math.floor(Math.random() * 1000)])
-    });
-  });
-}
-
 window.addEventListener("message", (event) => {
+  if (event.data.flag == "Language") {
+    language = event.data.language;
+    // console.log(language)
+  }
+  if (!hasLoadedDict) {
+    var payload = {flag: "Language"};
+    document.querySelector("body > div.pages > div.main.page > div.game > iframe").contentWindow.postMessage(payload, "*");
+    if (language == "") {
+      console.log("Dict error");
+      return;
+    }
+    chrome.runtime.sendMessage({dict: language}, function(dict) {
+      array = dict;
+      // console.log("loaded dictionary: " + array[Math.floor(Math.random() * 1000)]) -- This spams a lot, need to fix...works for now
+      // also causes bug where first word doesn't autofill in...goodluck
+      hasLoadedDict = true;
+    });
+  }
   if (event.data.name == "focusGameWindow") {
     var payload = {flag: "requestSyllable"};
     document.querySelector("body > div.pages > div.main.page > div.game > iframe").contentWindow.postMessage(payload, "*");
@@ -44,11 +52,6 @@ function findWord(target) {
       }
     }
 
-    /*if (validateUsedLetters(usedLetters, letters)) {
-      regrowWords.push(str);
-      console.log("added regrowWord: " + str)
-    }*/
-
     if (str.includes(target.toLowerCase()) && !usedWords.includes(str) && str.length <= 30) {
       matchingWords.push(str);
     }
@@ -59,33 +62,12 @@ function findWord(target) {
     return;
   }
 
-  var longestWord = getLongestWord(matchingWords);
-/*
-  var longestWord = "";
-  for (matchingWord of matchingWords) {
-    if (regrowWords.includes(matchingWord)) {
-      longestWord = matchingWord;
-      break;
-    }
-  }
-*/
-  // if (longestWord == "") longestWord = getRandomWord(matchingWords);
+  // var longestWord = getLongestWord(matchingWords);
+  var longestWord = getRandomWord(matchingWords);
 
   usedWords.push(longestWord);
-  for (const c of longestWord) {
-    usedLetters.push(c);
-  }
-  return longestWord;
-}
 
-function validateUsedLetters(arr1, arr2) {
-  var larger = arr1.length > arr2.length ? arr1 : arr2;
-  var smaller = arr1.length <= arr2.length ? arr2 : arr1;
-  for (c of smaller) {
-    if (!larger.includes(c)) larger.push(c);
-  }
-  if (larger.length >= 26) return true;
-  return false;
+  return longestWord;
 }
 
 function getLongestWord(arr) {
@@ -103,5 +85,3 @@ function getLongestWord(arr) {
 function getRandomWord(arr) {
   return arr[Math.floor(arr.length * Math.random())];
 }
-
-populateDict();

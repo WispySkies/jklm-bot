@@ -6,6 +6,8 @@ window.addEventListener("message", (event) => {
     processingWord = event.data.word;
     typeWord(event.data.word);
     // lightning(event.data.word);
+  } else if (event.data.flag == "Language") {
+    window.parent.postMessage({flag: "Language", language: document.querySelector("body > div.main.page > div.middle > div.canvasArea > div.quickRules > div > span.dictionary").textContent}, "*");
   }
 });
 
