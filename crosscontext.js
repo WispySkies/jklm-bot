@@ -6,17 +6,10 @@ window.addEventListener("message", (event) => {
     processingWord = event.data.word;
     typeWord(event.data.word);
     // lightning(event.data.word);
-  } else if (event.data.flag == "Language") {
+  } else if (event.data.flag == "langRequest") {
     window.parent.postMessage({flag: "Language", language: document.querySelector("body > div.main.page > div.middle > div.canvasArea > div.quickRules > div > span.dictionary").textContent}, "*");
   }
 });
-
-// window.socket.on("setPlayerWord", usedWord);
-
-function usedWord(playerPeerId, word) {
-  console.log(word);
-  window.parent.postMessage({flag: "usedWord", word: word}, "*");
-}
 
 function typeWord(word) {
   var currentTime = 500;
@@ -39,8 +32,4 @@ function dispatchKeyDown(letter) {
   var ev = document.createEvent("Event");
   ev.initEvent("input");
   input.dispatchEvent(ev);
-}
-
-function submitForm() {
-  window.document.getElementsByClassName("selfTurn")[0].children[0].submit();
 }
