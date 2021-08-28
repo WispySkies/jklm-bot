@@ -1,13 +1,10 @@
 window.addEventListener("message", (event) => {
   if (event.data.flag == "requestSyllable") {
-    var payload = {flag: "syllable", syllable: window.document.getElementsByClassName("syllable")[0].innerText};
+    var payload = {flag: "syllable", syllable: window.document.getElementsByClassName("syllable")[0].innerText, language: document.querySelector("body > div.main.page > div.middle > div.canvasArea > div.quickRules > div > span.dictionary").textContent};
     window.parent.postMessage(payload, "*");
   } else if (event.data.flag == "typeWord") {
-    processingWord = event.data.word;
     typeWord(event.data.word);
     // lightning(event.data.word);
-  } else if (event.data.flag == "langRequest") {
-    window.parent.postMessage({flag: "Language", language: document.querySelector("body > div.main.page > div.middle > div.canvasArea > div.quickRules > div > span.dictionary").textContent}, "*");
   }
 });
 
