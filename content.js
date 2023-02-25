@@ -50,7 +50,41 @@ function findWord(target) {
     return "WORD NOT FOUND";
   }
 
-  /* finds the word that will give us another life */
+  var regrowWord = regrowFocus(matchingWords);
+  var word = regrowWord == "" ? getRandomWord(matchingWords) : regrowWord;
+
+  word = getLongestWord(matchingWords)
+
+  /* add its letters to the list */
+  for (const c of word) {
+    if (!usedLetters.includes(c)) {
+      usedLetters.push(c);
+    }
+  }
+
+  usedWords.push(word);
+
+  return word;
+}
+
+function regrowFocus(matchingWords) {
+  var regen = regrowComplete(matchingWords);
+  if (regen != "") return regen;
+
+  var set = [];
+  for (word of matchingWords) {
+    var uniqueLetters = [];
+    for (const c of word) {
+      if (!uniqueLetters.includes(c) && !usedLetters.includes(c)) {
+        uniqueLetters.push(c);
+      }
+    }
+    set.push([word, uniqueLetters.length]);
+  }
+  return set.sort((a, b) => {a[1].length - b[1].length}).pop()[0];
+}
+
+function regrowComplete(matchingWords) {
   var regrowWord = "";
   for (word of matchingWords) {
     var uniqueLetters = [];
@@ -66,19 +100,7 @@ function findWord(target) {
       break; // will always get 1st word that gives a life in alphabetical order
     }
   }
-
-  var word = regrowWord == "" ? getRandomWord(matchingWords) : regrowWord;
-
-  /* add its letters to the list */
-  for (const c of word) {
-    if (!usedLetters.includes(c)) {
-      usedLetters.push(c);
-    }
-  }
-
-  usedWords.push(word);
-
-  return word;
+  return regrowWord;
 }
 
 function getLongestWord(arr) {
