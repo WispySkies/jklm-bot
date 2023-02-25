@@ -2,17 +2,11 @@
   "name": "jklm bot lol",
   "version": "1.0",
   "description": "idklol!",
-  "permissions": [
+  "host_permissions": [
     "https://*/*"
   ],
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
-  },
-  "browser_action": {
-    "default_popup": "popup.html"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
@@ -27,8 +21,14 @@
     }
 ],
   "web_accessible_resources": [
-    "dictionary.txt",
-    "pokemon.txt"
+    {
+      "resources": ["dictionary.txt"],
+      "matches": ["https://jklm.fun/*"]
+    },
+    {
+      "resources": ["pokemon.txt"],
+      "matches": ["https://jklm.fun/*"]
+    }
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }
